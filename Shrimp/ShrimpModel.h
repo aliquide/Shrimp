@@ -49,7 +49,7 @@ void drawShrimp()
 			}
 
 			glPushMatrix();
-				glRotatef(sin(clock() / 50) * 15, 0, 0, 1);
+				glRotatef(sin(clock() / 50 + i) * 15, 0, 0, 1);
 				glTranslatef(0, -0.2, 1);
 				glRotatef(90, 0, 1, 0);
 				glTranslatef(0, 0, 0.8);
@@ -63,7 +63,7 @@ void drawShrimp()
 				glEnd();
 			glPopMatrix();
 			glPushMatrix();
-			glRotatef(sin(clock() / 50) * 15, 0, 0, 1);
+			glRotatef(sin(clock() / 50 + i) * 15, 0, 0, 1);
 				glTranslatef(0, -0.2, 1);
 				glRotatef(-90, 0, 1, 0);
 				glTranslatef(0, 0, 0.8);
