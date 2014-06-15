@@ -1,5 +1,5 @@
-#include<cmath>
-#include <ctime>
+#include <cmath>
+#include <time.h>
 
 void drawShrimp()
 {
@@ -40,11 +40,11 @@ void drawShrimp()
 			gluCylinder(podstawa, 1.0, 0.8, 1, 40, 40);
 
 			glPushMatrix();
+				glRotatef(sin(clock() / 50) * 15, 0, 0, 1);
 				glTranslatef(0, -0.2, 1);
 				glRotatef(90, 0, 1, 0);
 				glTranslatef(0, 0, 0.8);
 				glRotatef(-90, 0, 1, 0);
-				glRotatef(sin(time(NULL)), 0, 0, 1);
 				glBegin(GL_TRIANGLE_STRIP);
 					glVertex3f(0, 0, 0);
 					glVertex3f(-0.1, 0.2, 0);
@@ -54,6 +54,7 @@ void drawShrimp()
 				glEnd();
 			glPopMatrix();
 			glPushMatrix();
+			glRotatef(sin(clock() / 50) * 15, 0, 0, 1);
 				glTranslatef(0, -0.2, 1);
 				glRotatef(-90, 0, 1, 0);
 				glTranslatef(0, 0, 0.8);

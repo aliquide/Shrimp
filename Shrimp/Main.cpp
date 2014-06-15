@@ -84,7 +84,6 @@ void computePos(float deltaMove)
 
 void renderScene(void)
 {
-
 	if (deltaMove || deltaSideMove)
 		computePos(deltaMove);
 
@@ -98,9 +97,8 @@ void renderScene(void)
 		x + lx, y + ly, z + lz,
 		0.0f, 1.0f, 0.0f);
 
-	// Draw ground
-
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
 
 	glPushMatrix();
 		glTranslatef(light_position[0], light_position[1], light_position[2]);
@@ -108,6 +106,7 @@ void renderScene(void)
 	glPopMatrix();
 
 	glPushMatrix();
+		glColor3f(0.1f, 0.0f, 0.3f);
 		glTranslatef(0.0f, -6.0f, 0.0f);
 		glBegin(GL_TRIANGLE_STRIP);
 		for (int i = -50; i < 50; i++)
