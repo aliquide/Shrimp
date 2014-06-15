@@ -39,8 +39,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>E:\Projects\Shrimp\Shrimp\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Projects\Shrimp\Shrimp\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Programming\GitHub\Shrimp\Shrimp\include;E:\Projects\Shrimp\Shrimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programming\GitHub\Shrimp\Shrimp\lib;E:\Projects\Shrimp\Shrimp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -68,6 +68,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ImageLoader.h" />
+    <ClInclude Include="ShrimpModel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

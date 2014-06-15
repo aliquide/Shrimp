@@ -1,5 +1,8 @@
+#define _CRT_SECURE_NO_DEPRECATE
+
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -7,20 +10,26 @@
 #include <GL/glut.h>
 #endif
 
+#include "ImageLoader.h"
+#include "ShrimpModel.h"
+
 // angle of rotation for the camera direction
-float angle = 0.0f;
+float angleX = 0.0f;
+float angleY = 0.0f;
 
 // actual vector representing the camera's direction
-float lx = 0.0f, lz = -1.0f;
+float lx = 0.0f, lz = -1.0f, ly = 0.0f;
 
 // XZ position of the camera
-float x = 0.0f, z = 5.0f;
+float x = 0.0f, z = 5.0f, y = 2.0f;
 
 // the key states. These variables will be zero
 //when no key is being presses
-float deltaAngle = 0.0f;
+float deltaXAngle = 0.0f;
+float deltaYAngle = 0.0f;
 float deltaMove = 0;
 int xOrigin = -1;
+int yOrigin = -1;
 
 GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
 void init(void)
@@ -94,6 +103,7 @@ void computePos(float deltaMove) {
 
 	x += deltaMove * lx * 0.1f;
 	z += deltaMove * lz * 0.1f;
+	y += deltaMove * ly * 0.1f;
 }
 
 void renderScene(void) {
@@ -107,8 +117,8 @@ void renderScene(void) {
 	// Reset transformations
 	glLoadIdentity();
 	// Set the camera
-	gluLookAt(x, 1.0f, z,
-		x + lx, 1.0f, z + lz,
+	gluLookAt(x, y, z,
+		x + lx, y + ly, z + lz,
 		0.0f, 1.0f, 0.0f);
 
 	// Draw ground
@@ -128,7 +138,7 @@ void renderScene(void) {
 	for (int j = -3; j < 3; j++) {
 		glPushMatrix();
 		glTranslatef(i*10.0, 0, j * 10.0);
-		drawSnowMan();
+		drawShrimp();
 		glPopMatrix();
 	}
 	glutSwapBuffers();
@@ -162,11 +172,16 @@ void mouseMove(int x, int y) {
 	if (xOrigin >= 0) {
 
 		// update deltaAngle
-		deltaAngle = (x - xOrigin) * 0.001f;
+		deltaXAngle = (x - xOrigin) * 0.003f;
 
 		// update camera's direction
-		lx = sin(angle + deltaAngle);
-		lz = -cos(angle + deltaAngle);
+		lx = sin(angleX + deltaXAngle);
+		lz = -cos(angleX + deltaXAngle);
+
+		deltaYAngle = (y - yOrigin) * 0.003f;
+
+		ly = sin(angleY - deltaYAngle);
+		lz = -cos(angleY - deltaYAngle);
 	}
 }
 
@@ -177,11 +192,14 @@ void mouseButton(int button, int state, int x, int y) {
 
 		// when the button is released
 		if (state == GLUT_UP) {
-			angle += deltaAngle;
+			angleX -= deltaXAngle;
+			angleY -= deltaYAngle;
 			xOrigin = -1;
+			yOrigin = -1;
 		}
 		else  {// state = GLUT_DOWN
 			xOrigin = x;
+			yOrigin = y;
 		}
 	}
 }
