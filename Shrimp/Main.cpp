@@ -35,10 +35,12 @@ int yOrigin = -1;
 GLfloat light_position[] = { -2.0, 1.0, -2.0, 0.0 };
 void init(void)
 {
+	GLfloat mat_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_shininess[] = { 50.0 };
+	GLfloat mat_shininess[] = { 30.0 };
 	glShadeModel(GL_SMOOTH);
 
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
@@ -73,15 +75,15 @@ void changeSize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void computePos(float deltaMove) {
-
-	printf("deltaSide: %f\n", deltaSideMove);
+void computePos(float deltaMove) 
+{
 	x += (deltaMove * lx - deltaSideMove * lz) * 0.1f;
 	z += (deltaMove * lz + deltaSideMove * lx) * 0.1f;
 	y += deltaMove * ly * 0.1f;
 }
 
-void renderScene(void) {
+void renderScene(void)
+{
 
 	if (deltaMove || deltaSideMove)
 		computePos(deltaMove);
@@ -124,8 +126,10 @@ void renderScene(void) {
 	for (int j = -1; j < 1; j++) {
 		glPushMatrix();
 		glTranslatef(i*10.0, 0, j * 10.0);
+		glColor3f(1.0f, 0.0f, 0.0f);
 		drawShrimp();
 		glPopMatrix();
+		glColor3f(1.0f, 1.0f, 1.0f);
 	}
 	glutSwapBuffers();
 }
@@ -175,7 +179,7 @@ void releaseKey(unsigned char key, int x, int y) {
 void mouseMove(int x, int y) {
 
 	// this will only be true when the left button is down
-	if (xOrigin >= 0) {
+	if (xOrigin >= 0 && yOrigin >= 0) {
 
 		// update deltaAngle
 		deltaXAngle = (x -  xOrigin) * 0.003f;
@@ -183,9 +187,6 @@ void mouseMove(int x, int y) {
 		// update camera's direction
 		lx = sin(angleX + deltaXAngle);
 		lz = -cos(angleX + deltaXAngle);
-
-	}
-	if (yOrigin >= 0) {
 
 		deltaYAngle = (y - yOrigin) * 0.003f;
 
@@ -240,6 +241,8 @@ int main(int argc, char **argv) {
 
 	// OpenGL init
 	glEnable(GL_DEPTH_TEST);
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_COLOR_MATERIAL);
 
 	// enter GLUT event processing cycle
 	glutMainLoop();
