@@ -3,7 +3,7 @@
 
 void drawShrimp()
 {
-	glRotatef(90, 0, 0, 1);
+	glRotatef(45, 0, 0, 1);
 	glPushMatrix();
 		glPushMatrix();
 			glScalef(3, 3, 3);
@@ -26,18 +26,27 @@ void drawShrimp()
 		glTranslatef(0, 0, 0.4);
 		
 		glPushMatrix();
-			glTranslatef(0, 0, 0.5);
-			glutSolidSphere(0.8, 40, 40);
+			glTranslatef(0, 0, 0.15);
+			glutSolidSphere(0.55, 40, 40);
+
 		glPopMatrix();
 
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 10; i++)
 		{
-			if (i != 0){
-				glRotatef(15, 1, 0, 0);
-				glTranslatef(0, 0, 0.5);
+			if (i != 0)
+			{
+				glRotatef(5, 1, 0, 0);
+				glTranslatef(0, 0.1, 0.5);
 			}
 			GLUquadricObj *podstawa = gluNewQuadric();
-			gluCylinder(podstawa, 1.0, 0.8, 1, 40, 40);
+			if (i < 4)
+			{
+				gluCylinder(podstawa, 0.5 + 0.1*(i+1), 0.4 + 0.1*i, 1, 40, 40);
+			}
+			else
+			{
+				gluCylinder(podstawa, 1.0, 0.8, 1, 40, 40);
+			}
 
 			glPushMatrix();
 				glRotatef(sin(clock() / 50) * 15, 0, 0, 1);
@@ -98,7 +107,7 @@ void drawShrimp()
 				glVertex3f(-0.5, -0.2, 0.1);
 			glEnd();
 		glPopMatrix();
-		glRotatef(-70, 0, 0, 1);
+		glRotatef(-90, 0, 0, 1);
 		glTranslatef(-0.4, 0, 1);
 		glPushMatrix();
 			glTranslatef(0, 0.3, 0);
