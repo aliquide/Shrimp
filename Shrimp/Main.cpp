@@ -33,6 +33,9 @@ int xOrigin = -1;
 int yOrigin = -1;
 
 GLfloat light_position[] = { -2.0, 1.0, -2.0, 0.0 };
+
+MovementControl mov = idle;
+
 void init(void)
 {
 	GLfloat mat_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
@@ -126,7 +129,7 @@ void renderScene(void)
 		glPushMatrix();
 		glTranslatef(i*10.0, 0, j * 10.0);
 		glColor3f(1.0f, 0.0f, 0.0f);
-		drawShrimp();
+		drawShrimp(mov);
 		glPopMatrix();
 		glColor3f(1.0f, 1.0f, 1.0f);
 	}
@@ -152,6 +155,16 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 		case 'd':
 			deltaSideMove = 0.5f;
 			break;
+		case '1':
+			mov = idle;
+			break;
+		case '2':
+			mov = bounce;
+			break;
+		case '3':
+			mov = crazy;
+			break;
+
 	}
 }
 

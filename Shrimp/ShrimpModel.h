@@ -1,15 +1,30 @@
 #include <cmath>
 #include <time.h>
 
-void drawShrimp()
+enum MovementControl
+{
+	idle = 0,
+	bounce = 1,
+	crazy = 2,
+};
+
+void drawShrimp(MovementControl mov)
 {
 	glRotatef(45, 0, 0, 1);
+	glColor3f(0.4, 0, 0);
 	glPushMatrix();
 		glPushMatrix();
 			glScalef(3, 3, 3);
 			glRotatef(180, 1, 0, 0);
 			glRotatef(90, 0, 1, 0);
-			glRotatef(90 - sin(float(clock()) / 100) * 15, 1, 0, 0);
+			if (mov == bounce || mov == crazy)
+			{
+				glRotatef(90 - sin(float(clock()) / 100) * 15, 1, 0, 0);
+			}
+			else if (mov == idle)
+			{
+				glRotatef(90, 1, 0, 0);
+			}
 			glTranslatef(0, -0.3, 0.2);
 			glBegin(GL_TRIANGLE_FAN);
 				glVertex3f(0, 0, 0);
@@ -35,12 +50,15 @@ void drawShrimp()
 		{
 			if (i != 0)
 			{
-				glRotatef(sin(float(clock())/100) * 5+ 5, 1, 0, 0);
+				if(mov == bounce) glRotatef(sin(float(clock())/100) * 5+ 5, 1, 0, 0);
+				if (mov == crazy) glRotatef(sin(float(clock()) / 100) * 5 + 5, 1, 1, (sin(float(clock()) / 100) * 5 + 5)-1);
+				else if (mov == idle) glRotatef(5, 1, 0, 0);
 				glTranslatef(0, 0.1, 0.5);
 			}
 			GLUquadricObj *podstawa = gluNewQuadric();
 			if (i < 4)
 			{
+				glColor3f(0.4 + 0.15*i, 0, 0);
 				gluCylinder(podstawa, 0.5 + 0.1*(i+1), 0.4 + 0.1*i, 1, 40, 40);
 			}
 			else
