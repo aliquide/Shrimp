@@ -28,10 +28,11 @@ float x = 0.0f, z = 5.0f, y = 2.0f;
 float deltaXAngle = 0.0f;
 float deltaYAngle = 0.0f;
 float deltaMove = 0;
+float deltaSideMove = 0;
 int xOrigin = -1;
 int yOrigin = -1;
 
-GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
+GLfloat light_position[] = { -2.0, 1.0, -2.0, 0.0 };
 void init(void)
 {
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -72,43 +73,17 @@ void changeSize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void drawSnowMan() {
-
-	glColor3f(1.0f, 1.0f, 1.0f);
-
-	// Draw Body
-	glTranslatef(0.0f, 0.75f, 0.0f);
-	glutSolidSphere(0.75f, 20, 20);
-
-	// Draw Head
-	glTranslatef(0.0f, 1.0f, 0.0f);
-	glutSolidSphere(0.25f, 20, 20);
-
-	// Draw Eyes
-	glPushMatrix();
-	glColor3f(0.0f, 0.0f, 0.0f);
-	glTranslatef(0.05f, 0.10f, 0.18f);
-	glutSolidSphere(0.05f, 10, 10);
-	glTranslatef(-0.1f, 0.0f, 0.0f);
-	glutSolidSphere(0.05f, 10, 10);
-	glPopMatrix();
-
-	// Draw Nose
-	glColor3f(1.0f, 0.5f, 0.5f);
-	glRotatef(0.0f, 1.0f, 0.0f, 0.0f);
-	glutSolidCone(0.08f, 0.5f, 10, 2);
-}
-
 void computePos(float deltaMove) {
 
-	x += deltaMove * lx * 0.1f;
-	z += deltaMove * lz * 0.1f;
+	printf("deltaSide: %f\n", deltaSideMove);
+	x += (deltaMove * lx - deltaSideMove * lz) * 0.1f;
+	z += (deltaMove * lz + deltaSideMove * lx) * 0.1f;
 	y += deltaMove * ly * 0.1f;
 }
 
 void renderScene(void) {
 
-	if (deltaMove)
+	if (deltaMove || deltaSideMove)
 		computePos(deltaMove);
 
 	// Clear Color and Depth Buffers
@@ -124,18 +99,29 @@ void renderScene(void) {
 	// Draw ground
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glColor3f(0.9f, 0.9f, 0.9f);
-	glBegin(GL_QUADS);
-	glVertex3f(-100.0f, 0.0f, -100.0f);
-	glVertex3f(-100.0f, 0.0f, 100.0f);
-	glVertex3f(100.0f, 0.0f, 100.0f);
-	glVertex3f(100.0f, 0.0f, -100.0f);
-	glEnd();
 
-	// Draw 36 SnowMen
+	glPushMatrix();
+		glTranslatef(light_position[0], light_position[1], light_position[2]);
+		glutSolidSphere(0.3, 30, 30);
+	glPopMatrix();
 
-	for (int i = -3; i < 3; i++)
-	for (int j = -3; j < 3; j++) {
+	glPushMatrix();
+		glTranslatef(0.0f, -6.0f, 0.0f);
+		glBegin(GL_TRIANGLE_STRIP);
+		for (int i = -50; i < 50; i++)
+		{
+			for (int j = -50; j < 50; j++)
+			{
+				glVertex3f(i, 0.0f, j);
+				glVertex3f(i + 1, 0.0f, j);
+			}
+		}
+		glEnd();
+	glPopMatrix();
+	// Draw 4 shrimps
+
+	for (int i = -1; i < 1; i++)
+	for (int j = -1; j < 1; j++) {
 		glPushMatrix();
 		glTranslatef(i*10.0, 0, j * 10.0);
 		drawShrimp();
@@ -146,23 +132,43 @@ void renderScene(void) {
 
 void processNormalKeys(unsigned char key, int xx, int yy) {
 
-	if (key == 27)
-		exit(0);
-}
-
-void pressKey(int key, int xx, int yy) {
-
-	switch (key) {
-	case GLUT_KEY_UP: deltaMove = 0.5f; break;
-	case GLUT_KEY_DOWN: deltaMove = -0.5f; break;
+	switch (key)
+	{
+		case 27:
+			exit(0);
+			break;
+		case 'w':
+			deltaMove = 0.5f;
+			break;
+		case 's':
+			deltaMove = -0.5f;
+			break;
+		case 'a':
+			deltaSideMove = -0.5f;
+			break;
+		case 'd':
+			deltaSideMove = 0.5f;
+			break;
 	}
 }
 
-void releaseKey(int key, int x, int y) {
+/*void pressKey(int key, int xx, int yy) {
 
 	switch (key) {
-	case GLUT_KEY_UP:
-	case GLUT_KEY_DOWN: deltaMove = 0; break;
+	}
+}*/
+
+void releaseKey(unsigned char key, int x, int y) {
+
+	switch (key) {
+		case 'w':
+		case 's':
+			deltaMove = 0;
+			break;
+		case 'a':
+		case 'd':
+			deltaSideMove = 0;
+			break;
 	}
 }
 
@@ -172,16 +178,18 @@ void mouseMove(int x, int y) {
 	if (xOrigin >= 0) {
 
 		// update deltaAngle
-		deltaXAngle = (x - xOrigin) * 0.003f;
+		deltaXAngle = (x -  xOrigin) * 0.003f;
 
 		// update camera's direction
 		lx = sin(angleX + deltaXAngle);
 		lz = -cos(angleX + deltaXAngle);
 
+	}
+	if (yOrigin >= 0) {
+
 		deltaYAngle = (y - yOrigin) * 0.003f;
 
 		ly = sin(angleY - deltaYAngle);
-		lz = -cos(angleY - deltaYAngle);
 	}
 }
 
@@ -192,7 +200,7 @@ void mouseButton(int button, int state, int x, int y) {
 
 		// when the button is released
 		if (state == GLUT_UP) {
-			angleX -= deltaXAngle;
+			angleX += deltaXAngle;
 			angleY -= deltaYAngle;
 			xOrigin = -1;
 			yOrigin = -1;
@@ -210,7 +218,7 @@ int main(int argc, char **argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100, 100);
-	glutInitWindowSize(320, 320);
+	glutInitWindowSize(800, 600);
 	glutCreateWindow("Lighthouse3D - GLUT Tutorial");
 
 	init();
@@ -222,8 +230,9 @@ int main(int argc, char **argv) {
 
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);
-	glutSpecialFunc(pressKey);
-	glutSpecialUpFunc(releaseKey);
+	glutKeyboardUpFunc(releaseKey);
+	//glutSpecialFunc(pressKey);
+	//glutSpecialUpFunc(releaseKey);
 
 	// here are the two new functions
 	glutMouseFunc(mouseButton);

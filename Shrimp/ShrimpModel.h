@@ -66,7 +66,6 @@ void drawShrimp()
 				glVertex3f(-0.5, -0.2, 0.1);
 			glEnd();
 		glPopMatrix();
-
 		glRotatef(-70, 0, 0, 1);
 		glTranslatef(-0.4, 0, 1);
 		glPushMatrix();
@@ -81,5 +80,18 @@ void drawShrimp()
 			glTranslatef(0, 0, 0.23);
 			glutSolidSphere(0.08, 12, 12);
 		glPopMatrix();
+	glRotatef(-70, 0, 0, 1);
+	glTranslatef(-0.4, 0, 1);
+	glPushMatrix();
+	glTranslatef(0, 0.3, 0);
+	glutSolidSphere(0.3, 30, 30);
+	glTranslatef(0, 0, 0.23);
+	glutSolidSphere(0.08, 12, 12);
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(0, -0.3, 0);
+	glutSolidSphere(0.3, 30, 30);
+	glTranslatef(0, 0, 0.23);
+	glutSolidSphere(0.08, 12, 12);
 	glPopMatrix();
 }
