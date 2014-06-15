@@ -47,5 +47,4 @@ void drawShrimp()
 	glTranslatef(0, 0, 0.23);
 	glutSolidSphere(0.08, 12, 12);
 	glPopMatrix();
-	glPopMatrix();
 }
