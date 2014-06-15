@@ -32,21 +32,25 @@ float deltaSideMove = 0;
 int xOrigin = -1;
 int yOrigin = -1;
 
-GLfloat light_position[] = { -2.0, 1.0, -2.0, 0.0 };
-void init(void)
-{
-	GLfloat mat_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
-	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_shininess[] = { 30.0 };
-	glShadeModel(GL_SMOOTH);
+static double yVal = 1.0;
 
-	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+void init(double a, double b, double c, double d, double e, double f)
+{
+	GLfloat mat_specular[] = { 0.3, 1.0, 0.3, 1.0 };
+	GLfloat mat_shininess[] = { 50.0 };
+	GLfloat light_position[] = { a, b, c, 1.0 };
+	GLfloat spotDir[] = { d, e, f };
+	glClearColor(0.5, 0.5, 0.5, 0.0);
+	glShadeModel(GL_SMOOTH);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, mat_specular);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+	// Definig spotlight attributes
+	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 95.0);
+	glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 2.0);
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spotDir);
+	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -92,16 +96,16 @@ void renderScene(void)
 
 	// Reset transformations
 	glLoadIdentity();
+	init(yVal, 5.0, 1.5, 10.0, 1.0, 10.0);
+
 	// Set the camera
 	gluLookAt(x, y, z,
 		x + lx, y + ly, z + lz,
 		0.0f, 1.0f, 0.0f);
 
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
 
 	glPushMatrix();
-		glTranslatef(light_position[0], light_position[1], light_position[2]);
 		glutSolidSphere(0.3, 30, 30);
 	glPopMatrix();
 
@@ -151,6 +155,14 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 			break;
 		case 'd':
 			deltaSideMove = 0.5f;
+			break;
+		case  'z':
+			yVal > -10 ? yVal-- : yVal;
+			printf("Light intensity: %f\n", yVal);
+			break;
+		case 'c':
+			yVal < 10 ? yVal++ : yVal;
+			printf("Light intensity: %f\n", yVal);
 			break;
 	}
 }
@@ -221,8 +233,6 @@ int main(int argc, char **argv) {
 	glutInitWindowSize(800, 600);
 	glutCreateWindow("Lighthouse3D - GLUT Tutorial");
 
-	init();
-
 	// register callbacks
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
@@ -239,6 +249,8 @@ int main(int argc, char **argv) {
 	glutMotionFunc(mouseMove);
 
 	// OpenGL init
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glEnable(GL_COLOR_MATERIAL);
