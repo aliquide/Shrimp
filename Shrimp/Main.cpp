@@ -36,20 +36,28 @@ GLfloat light_position[] = { -2.0, 1.0, -2.0, 0.0 };
 
 MovementControl mov = idle;
 
-void init(void)
-{
-	GLfloat mat_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
-	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_shininess[] = { 30.0 };
-	glShadeModel(GL_SMOOTH);
+static double yVal = 1.0;
 
-	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+void init(double a, double b, double c, double d, double e, double f)
+{
+	//GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_shininess[] = { 50.0 };
+	GLfloat light_position[] = { a, b, yVal, 1.0 };
+	GLfloat spotDir[] = { d, e, f };
+	//glClearColor(0.5, 0.5, 0.5, 0.0);
+	glShadeModel(GL_SMOOTH);
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE, mat_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, mat_specular);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+	// Definig spotlight attributes
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.1f);
+	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 120.0);
+	glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 20.0);
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spotDir);
+	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -95,32 +103,33 @@ void renderScene(void)
 
 	// Reset transformations
 	glLoadIdentity();
+
 	// Set the camera
 	gluLookAt(x, y, z,
 		x + lx, y + ly, z + lz,
 		0.0f, 1.0f, 0.0f);
 
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
+	init(0.0, 5.0, 0.0, 0.0, -1.0, 0.0);
 
 	glPushMatrix();
-		glTranslatef(light_position[0], light_position[1], light_position[2]);
+	glTranslatef(0.0, 5.0, yVal);
 		glutSolidSphere(0.3, 30, 30);
 	glPopMatrix();
 
 	glPushMatrix();
 		glColor3f(0.1f, 0.0f, 0.3f);
 		glTranslatef(0.0f, -6.0f, 0.0f);
-		glBegin(GL_TRIANGLE_STRIP);
 		for (int i = -50; i < 50; i++)
 		{
+			glBegin(GL_TRIANGLE_STRIP);
 			for (int j = -50; j < 50; j++)
 			{
 				glVertex3f(i, 0.0f, j);
 				glVertex3f(i + 1, 0.0f, j);
 			}
+			glEnd();
 		}
-		glEnd();
 	glPopMatrix();
 	// Draw 4 shrimps
 
@@ -165,6 +174,14 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 			mov = crazy;
 			break;
 
+		case  'z':
+			yVal > -50 ? yVal -= 5 : yVal;
+			printf("Light intensity: %f\n", yVal);
+			break;
+		case 'c':
+			yVal < 50 ? yVal += 5 : yVal;
+			printf("Light intensity: %f\n", yVal);
+			break;
 	}
 }
 
@@ -234,8 +251,6 @@ int main(int argc, char **argv) {
 	glutInitWindowSize(800, 600);
 	glutCreateWindow("Lighthouse3D - GLUT Tutorial");
 
-	init();
-
 	// register callbacks
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
@@ -252,9 +267,9 @@ int main(int argc, char **argv) {
 	glutMotionFunc(mouseMove);
 
 	// OpenGL init
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-	glEnable(GL_COLOR_MATERIAL);
 
 	// enter GLUT event processing cycle
 	glutMainLoop();
